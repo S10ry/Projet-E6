@@ -62,16 +62,16 @@
 
 <?php
 
-$client = new Mosquitto\Client;
+phpinfo();
+
+$client = new Mosquitto\Client("test");
 $client->onConnect('connect');
 $client->onDisconnect('disconnect');
 $client->onSubscribe('subscribe');
 $client->onMessage('message');
-$client->connect("192.168.5.1");
+$client->connect("172.20.10.5", 1883, 60);
 $client->subscribe('#', 0); // Subscribe to all messages
-
 $client->loopForever();
-
 function connect($r) {
 	echo "Received response code {$r}\n";
 }

@@ -1,3 +1,65 @@
+<?php
+	ini_set('display_errors', 1);
+ini_set('display_startup_errors', 1);
+error_reporting(E_ALL);
+
+
+	
+	$client = new Mosquitto\Client("test");
+	$client->onConnect('connect');
+	$client->onDisconnect('disconnect');
+	$client->onSubscribe('subscribe');
+	$client->onMessage('message');
+	$client->connect("172.20.10.5", 1883, 60);
+	$client->subscribe('#', 0); // Subscribe to all messages
+	$client->loopForever();
+	
+	
+	function connect($r) {
+		
+		echo "Received response code {$r}\n";
+	}
+
+	function subscribe() {
+		echo "Subscribed to a topic\n";
+	}
+
+	function message($message) {
+		$servername = "localhost";
+		$username = "sory";
+		$password = "sory";
+		$dbname = "supervision";
+	
+		$conn = new mysqli($servername, $username, $password, $dbname);
+
+		if ($conn->connect_error) {
+			die("Connection failed: " . $conn->connect_error);
+		} 
+	
+		echo "Connected successfully";
+		$vitesse = $message->payload;
+		$sql = "INSERT INTO supervision (vitesse_train1, created_at)
+			VALUES ($vitesse, NOW())";
+			
+		if ($conn->query($sql) === TRUE) {
+			echo "New record created successfully";
+		} 
+		else {
+			echo "Error: " . $sql . "<br>" . $conn->error;
+			printf("Got a message on topic %s with payload:\n%s\n", $message->topic, $message->payload);
+		}
+	}
+
+	function disconnect() {
+		echo "Disconnected cleanly\n";
+	}
+
+	
+	
+
+$conn->close(); 
+?>
+
 <!doctype html>
 <html lang="fr">
   <head>
@@ -73,38 +135,4 @@
   </body>
 </html>
 
-<?php
-	ini_set('display_errors', 1);
-	ini_set('display_startup_errors', 1);
-	error_reporting(E_ALL);
-  
-	$c = new Mosquitto\Client;
-	$c->onConnect(function() use($c) {
-		$c->disconnect();
-	});
-	$c->onSubscribe('subscribe');
-	$c->onMessage('message');
-	$c->connect('192.168.5.1');
-	$c->subscribe("#", 0);
-	$c->loopForever();
-	
-	function connect($r)
-	{
-		echo "Recieved response code {r}\n";
-	}
-	
-	function subscribe()
-	{
-		echo "Subscribed to a topic\n";
-	}
-	
-	function message($message)
-	{
-		printf("Got a message on topic %s with payload:\n%s\n", $message->topic, $message->payload);
-	}
-	
-	function disconnect()
-	{
-		echo "Disconnected cleanly\n";
-	} 
-?>
+
