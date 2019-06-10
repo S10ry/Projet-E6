@@ -1,0 +1,21 @@
+$servername = "localhost";
+		$username = "sory";
+		$password = "sory";
+		$dbname = "supervision";
+	
+		$conn = new mysqli($servername, $username, $password, $dbname);
+
+		if ($conn->connect_error) {
+			die("Connection failed: " . $conn->connect_error);
+		} 
+	
+		echo "Connected successfully";
+		$vitesse = $message->payload;
+		$sql = "INSERT INTO supervision (vitesse_train1, created_at)
+			VALUES ($vitesse, NOW())";
+			
+		if ($conn->query($sql) === TRUE) {
+			echo "New record created successfully";
+		} 
+		else {
+			echo "Error: " . $sql . "<br>" . $conn->error;

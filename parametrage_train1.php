@@ -13,7 +13,7 @@
   <body>
     <nav class="navbar navbar-dark bg-primary">
         <div class="container">
-          <a class="navbar-brand" href="#">Trains LMS</a>
+          <a class="navbar-brand" href="index.php">Trains LMS</a>
             <ul class="nav justify-content-end">
               <li class="nav-item ">
                 <a class="nav-link  text-white" href="index.php">Informations</a>
@@ -22,10 +22,7 @@
                 <a class="nav-link text-white" href="parametrage_train1.php">Parametrage</a>
               </li>
               <li class="nav-item">
-                <a class="nav-link text-white" href="historique.php">Historique</a>
-              </li>
-              <li class="nav-item">
-                <a class="nav-link text-white" href="test.php">Test</a>
+                <a class="nav-link text-white" href="historique_vit_1.php">Historique</a>
               </li>
             </ul>
         </div>
@@ -48,12 +45,8 @@
         <button type="submit" class="btn btn-danger mt-5" name="stop">ARRET EN GARE</button>
       </form>
       <form method="post" action="parametrage_train1.php">
-        <button type="submit" class="btn btn-danger mt-5" name="stop">ARRET EN GARE 2</button>
+        <button type="submit" class="btn btn-danger mt-5" name="stop_1">ARRET EN GARE 2</button>
       </form>
-      <form method="post" action="parametrage_train1.php">
-        <button type="submit" class="btn btn-danger mt-5" name="reset">RESET</button>
-      </form>
-      
     </div>
   </body>
 </html>
@@ -63,10 +56,15 @@
 
 if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['stop']))
 {
-  func();
+  stop();
 }
 
-function func()
+if($_SERVER['REQUEST_METHOD'] == "POST" and isset($_POST['stop_1']))
+{
+  stop1();
+}
+
+function stop()
 {
   ini_set('display_errors', 1);
   ini_set('display_startup_errors', 1);
@@ -79,6 +77,23 @@ function func()
     
   $c->connect('192.168.5.1');
   $c->publish("site_web","0", 0);
+  $c->loopForever();
+  echo "Finished\n";
+}
+
+function stop1()
+{
+  ini_set('display_errors', 1);
+  ini_set('display_startup_errors', 1);
+  error_reporting(E_ALL);
+
+  $c = new Mosquitto\Client;
+  $c->onConnect(function() use($c) {
+      $c->disconnect();
+  });
+    
+  $c->connect('192.168.5.1');
+  $c->publish("site_web","1", 0);
   $c->loopForever();
   echo "Finished\n";
 }
